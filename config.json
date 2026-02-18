@@ -4,8 +4,8 @@
     },
    
     "cidades":{
-        "São Paulo": "id_saopaulo",
-        "Curitiba": "id_curitiba"
+        "São Paulo": "45881",
+        "Curitiba": "44944"
     },
 
     "cache_minutos": 10
