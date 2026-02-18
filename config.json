@@ -1,0 +1,12 @@
+{
+    "accuweather":{
+        "chave": "zpka_c59f7954292b44368f2ddf94609385d4_57640ed6"
+    },
+   
+    "cidades":{
+        "São Paulo": "id_saopaulo",
+        "Curitiba": "id_curitiba"
+    },
+
+    "cache_minutos": 10
+}
