@@ -1,11 +1,7 @@
 {
     "accuweather":{
-        "chave": "zpka_c59f7954292b44368f2ddf94609385d4_57640ed6"
-    },
-   
-    "cidades":{
-        "São Paulo": "45881",
-        "Curitiba": "44944"
+        "chave": "zpka_c59f7954292b44368f2ddf94609385d4_57640ed6",
+        "id_cidade": "41291"
     },
 
     "cache_minutos": 10
