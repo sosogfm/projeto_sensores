@@ -1,0 +1,71 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;  
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: 'Fira Sans', sans-serif;
+    font-weight: 100;
+    font-style: normal;
+    color: #333;
+    line-height: 1.6;
+    padding-top: 90px;
+    background-color: rgb(61, 61, 61);
+}
+
+
+ .container{
+    margin: 50px;
+    margin-top: 25px;
+    padding: 30px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    flex-direction: column;
+    
+}
+
+.criar1{
+  justify-content: space-between;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  text-align: left;
+  background-color: #e7f7ff;
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 15px;
+
+}
+.criar2{
+  justify-content: space-between;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  text-align: left;
+  background-color: #e7f7ff;
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 15px;
+
+}
+
+#btnCriar {
+    width: 70px;
+}
+
+#holder_variacao {
+    width: 180px;
+}
+
+input, select, #btnCriar {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    width: 150px;
+    margin-right: 10px;
+}
+
