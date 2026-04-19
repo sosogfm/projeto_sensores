@@ -1,0 +1,40 @@
+{
+  "contador_sensores": 5,
+  "historico_irrigacao": [
+    {
+      "ts": "2026-04-19T16:47:46.988643"
+    }
+  ],
+  "sensores": [
+    {
+      "id": "S0001",
+      "nome": "Sensor-S0001",
+      "tipo": "temp",
+      "modo": "estufa",
+      "min_val": 3.0,
+      "max_val": 33.0,
+      "falha": "erro_deteccao",
+      "criado_em": "2026-04-19T16:18:12.533333",
+      "historico": [],
+      "log": [],
+      "status_atual": "ok",
+      "ultimo_valor": null,
+      "ultima_leitura": null
+    },
+    {
+      "id": "S0004",
+      "nome": "Sensor-S0004",
+      "tipo": "umid",
+      "modo": "externo",
+      "min_val": 2.0,
+      "max_val": 22.0,
+      "falha": "erro_deteccao",
+      "criado_em": "2026-04-19T16:49:14.733376",
+      "historico": [],
+      "log": [],
+      "status_atual": "ok",
+      "ultimo_valor": null,
+      "ultima_leitura": null
+    }
+  ]
+}

@@ -1,209 +1,363 @@
-// Estado global 
-let modoAtivo = localStorage.getItem('modo') || 'externo'
+// ═══════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════
 let sensores = []
+let filtroModoAtivo = 'todos'
+let filtroTipoAtivo = 'todos'
 
-// Init 
+const STATUS_LABEL = { ok: '✓ OK', alerta: '⚠ Alerta', erro: '✕ Erro' }
+const FALHA_LABEL  = {
+    '':              'Sem falha',
+    'variacao':      'Variação',
+    'erro_deteccao': 'Erro de detecção',
+    'sem_resposta':  'Sem resposta'
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-    aplicarModo(modoAtivo)
-
-    if (document.getElementById('sensor-grid')) {
-        carregarSensores()
-    }
-    if (document.getElementById('historico-irrigacao')) {
-        carregarIrrigacao()
-    }
+    if (document.getElementById('grupo-faixa-temp')) toggleTipo()
+    if (document.getElementById('sensor-grid'))      carregarSensores()
 })
 
-// Modo estufa / externo 
-function trocarModo(modo) {
-    modoAtivo = modo
-    localStorage.setItem('modo', modo)
-    aplicarModo(modo)
-    if (document.getElementById('sensor-grid')) {
-        renderGrid()
-    }
+// ═══════════════════════════════════════════
+// PÁGINA DE CRIAÇÃO (index.html)
+// ═══════════════════════════════════════════
+function toggleTipo() {
+    const tipo = document.getElementById('select-tipo')?.value
+    if (!tipo) return
+    document.getElementById('grupo-faixa-temp').classList.toggle('hidden', tipo !== 'temp')
+    document.getElementById('grupo-faixa-umid').classList.toggle('hidden', tipo !== 'umid')
 }
 
-function aplicarModo(modo) {
-    document.documentElement.setAttribute('data-modo', modo)
-    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('ativo'))
-    const btn = document.getElementById(`btn-${modo}`)
-    if (btn) btn.classList.add('ativo')
+async function criarSensor() {
+    const tipo  = document.getElementById('select-tipo')?.value
+    const modo  = document.getElementById('select-modo')?.value
+    const falha = document.getElementById('select-falha')?.value || null
+
+    const min_val = tipo === 'temp' ? document.getElementById('f-min-temp').value
+                                    : document.getElementById('f-min-umid').value
+    const max_val = tipo === 'temp' ? document.getElementById('f-max-temp').value
+                                    : document.getElementById('f-max-umid').value
+
+    if (!min_val || !max_val) { showFeedback('Preencha todas as faixas.', 'erro'); return }
+    if (parseFloat(min_val) >= parseFloat(max_val)) { showFeedback('O mínimo deve ser menor que o máximo.', 'erro'); return }
+
+    try {
+        const res = await fetch('/api/sensores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tipo, modo, min_val: parseFloat(min_val), max_val: parseFloat(max_val), falha: falha || null })
+        })
+        if (!res.ok) throw new Error()
+        const sensor = await res.json()
+        showFeedback(`${sensor.nome} criado com sucesso!`, 'ok')
+        document.getElementById('f-min-temp').value = ''
+        document.getElementById('f-max-temp').value = ''
+        document.getElementById('f-min-umid').value = ''
+        document.getElementById('f-max-umid').value = ''
+        document.getElementById('select-falha').value = ''
+    } catch { showFeedback('Erro ao criar sensor.', 'erro') }
 }
 
-// Carregar sensores 
+function showFeedback(msg, tipo) {
+    const el = document.getElementById('feedback')
+    if (!el) return
+    el.textContent = msg
+    el.className = `feedback ${tipo}`
+    setTimeout(() => { el.className = 'feedback hidden' }, 4000)
+}
+
+// ═══════════════════════════════════════════
+// MODAL DE AÇÕES RÁPIDAS
+// ═══════════════════════════════════════════
+function abrirModal() {
+    document.getElementById('modal-overlay').classList.remove('hidden')
+    carregarStatusScheduler()
+}
+
+function fecharModal() {
+    document.getElementById('modal-overlay').classList.add('hidden')
+}
+
+function fecharModalOverlay(e) {
+    if (e.target === document.getElementById('modal-overlay')) fecharModal()
+}
+
+async function carregarStatusScheduler() {
+    try {
+        const res  = await fetch('/api/scheduler/status')
+        const data = await res.json()
+        const el   = document.getElementById('scheduler-info')
+        if (!el) return
+        const proxima = data.proxima_leitura
+            ? new Date(data.proxima_leitura).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            : '—'
+        const ultima = data.ultima_leitura
+            ? `${data.ultima_leitura.clima?.temperatura ?? '—'}°C / ${data.ultima_leitura.clima?.umidade ?? '—'}% às ${new Date(data.ultima_leitura.ts).toLocaleString('pt-BR', { hour:'2-digit', minute:'2-digit' })}`
+            : 'Nenhuma ainda'
+        el.innerHTML = `
+            <div class="sched-row"><span>Próxima leitura</span><strong>${proxima}</strong></div>
+            <div class="sched-row"><span>Última leitura</span><strong>${ultima}</strong></div>
+            <div class="sched-row"><span>Leituras hoje</span><strong>${data.total_hoje}</strong></div>
+        `
+    } catch { /* silencioso */ }
+}
+
+async function registrarIrrigacao() {
+    const obs = document.getElementById('irrigacao-obs')?.value || ''
+    try {
+        const res  = await fetch('/api/irrigacao', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ observacao: obs })
+        })
+        const data = await res.json()
+        let msg = '💧 Irrigação registrada!'
+        if (data.alertas_umidade?.length > 0) {
+            msg += ` ⚠ Atenção: ${data.alertas_umidade.length} sensor(es) com umidade abaixo do esperado mesmo após irrigação — verifique.`
+        }
+        mostrarFbModal('fb-irrigacao', msg, data.alertas_umidade?.length > 0 ? 'alerta' : 'ok')
+        document.getElementById('irrigacao-obs').value = ''
+    } catch { mostrarFbModal('fb-irrigacao', 'Erro ao registrar.', 'erro') }
+}
+
+async function registrarTempEstufa() {
+    const val = document.getElementById('estufa-temp')?.value
+    if (!val) { mostrarFbModal('fb-estufa', 'Informe a temperatura.', 'erro'); return }
+    try {
+        const res  = await fetch('/api/estufa/temperatura', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ valor: parseFloat(val) })
+        })
+        const data = await res.json()
+        const n    = data.atualizados?.length || 0
+        if (n === 0) {
+            mostrarFbModal('fb-estufa', 'Nenhum sensor de temperatura da estufa encontrado.', 'alerta')
+        } else {
+            mostrarFbModal('fb-estufa', `🌡 ${n} sensor(es) atualizado(s) com ${val}°C`, 'ok')
+            document.getElementById('estufa-temp').value = ''
+        }
+    } catch { mostrarFbModal('fb-estufa', 'Erro ao atualizar.', 'erro') }
+}
+
+function mostrarFbModal(id, msg, tipo) {
+    const el = document.getElementById(id)
+    if (!el) return
+    el.textContent = msg
+    el.className = `modal-feedback ${tipo}`
+    setTimeout(() => { el.className = 'modal-feedback hidden' }, 5000)
+}
+
+// ═══════════════════════════════════════════
+// PÁGINA DE GERENCIAR
+// ═══════════════════════════════════════════
 async function carregarSensores() {
-    const res = await fetch('/api/sensores')
-    sensores = await res.json()
+    try {
+        const res = await fetch('/api/sensores')
+        sensores  = await res.json()  // já vem ordenado: mais recente primeiro
+        renderGrid()
+        renderStats()
+    } catch(e) { console.error('Erro ao carregar sensores:', e) }
+}
+
+function filtrarModo(modo, btn) {
+    filtroModoAtivo = modo
+    btn.closest('.filtro-grupo').querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'))
+    btn.classList.add('ativo')
     renderGrid()
 }
 
-//Renderizar grid 
+function filtrarTipo(tipo, btn) {
+    filtroTipoAtivo = tipo
+    btn.closest('.filtro-grupo').querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'))
+    btn.classList.add('ativo')
+    renderGrid()
+}
+
+function renderStats() {
+    const bar = document.getElementById('stats-bar')
+    if (!bar) return
+    const ok     = sensores.filter(s => s.status_atual === 'ok').length
+    const alerta = sensores.filter(s => s.status_atual === 'alerta').length
+    const erro   = sensores.filter(s => s.status_atual === 'erro').length
+    bar.innerHTML = `
+        <span class="stat ok">${ok} ok</span>
+        <span class="stat alerta">${alerta} alerta</span>
+        <span class="stat erro">${erro} erro</span>
+    `
+}
+
 function renderGrid() {
-    const grid = document.getElementById('sensor-grid')
+    const grid  = document.getElementById('sensor-grid')
     const empty = document.getElementById('empty-state')
     if (!grid) return
 
-    const filtrados = sensores.filter(s => s.modo === modoAtivo)
+    let lista = sensores
+    if (filtroModoAtivo !== 'todos') lista = lista.filter(s => s.modo === filtroModoAtivo)
+    if (filtroTipoAtivo !== 'todos') lista = lista.filter(s => s.tipo === filtroTipoAtivo)
+
     grid.innerHTML = ''
+    if (lista.length === 0) { if (empty) empty.classList.remove('hidden'); return }
+    if (empty) empty.classList.add('hidden')
 
-    if (filtrados.length === 0) {
-        empty.classList.remove('hidden')
-        return
-    }
-    empty.classList.add('hidden')
-
-    filtrados.forEach(s => {
+    lista.forEach((s, i) => {
         const card = criarCard(s)
+        card.style.animationDelay = `${i * 0.05}s`
         grid.appendChild(card)
     })
 }
 
-// Criar card 
 function criarCard(s) {
     const unidade = s.tipo === 'temp' ? '°C' : '%'
-    const valor = s.ultimo_valor !== null ? `${s.ultimo_valor}${unidade}` : '—'
-    const status = s.status_atual || 'ok'
+    const status  = s.status_atual || 'ok'
+    const valor   = (s.ultimo_valor !== null && s.ultimo_valor !== undefined)
+        ? `${s.ultimo_valor}${unidade}` : '—'
 
     const div = document.createElement('div')
     div.className = `card status-${status}`
     div.innerHTML = `
-        <div class="card-id">${s.id}</div>
+        <div class="card-top">
+            <span class="card-id">${s.id}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+                <span class="card-modo">${s.modo === 'estufa' ? '🏠' : '🌿'}</span>
+                <button class="btn-deletar" title="Excluir sensor" onclick="deletarSensor(event, '${s.id}')">✕</button>
+            </div>
+        </div>
         <div class="card-nome">${s.nome}</div>
-        <div class="card-tipo">${s.tipo === 'temp' ? '🌡 Temperatura' : '💧 Umidade'}</div>
+        <div class="card-tipo">${s.tipo === 'temp' ? '🌡 TEMPERATURA' : '💧 UMIDADE'}</div>
         <div class="card-valor">${valor}</div>
         <div class="card-faixa">${s.min_val}${unidade} — ${s.max_val}${unidade}</div>
-        <div class="status-pill ${status}">${statusLabel(status)}</div>
+        <div class="card-footer">
+            <span class="status-pill ${status}">${STATUS_LABEL[status] || status}</span>
+            <span class="card-ts">${s.ultima_leitura ? formatTs(s.ultima_leitura) : '—'}</span>
+        </div>
     `
     div.addEventListener('click', () => abrirDetalhe(s.id))
     return div
 }
 
-function statusLabel(s) {
-    return { ok: '✓ OK', alerta: '⚠ Alerta', erro: '✕ Erro' }[s] || s
+async function deletarSensor(e, id) {
+    e.stopPropagation()  // não abre o detalhe
+    if (!confirm(`Excluir sensor ${id}? Esta ação não pode ser desfeita.`)) return
+    try {
+        const res = await fetch(`/api/sensores/${encodeURIComponent(id)}`, { method: 'DELETE' })
+        if (!res.ok) throw new Error()
+        sensores = sensores.filter(s => s.id !== id)
+        renderGrid()
+        renderStats()
+    } catch { alert('Erro ao excluir sensor.') }
 }
 
-// Detalhe do sensor
-async function abrirDetalhe(id) {
-    const res = await fetch(`/api/sensores/${id}`)
-    const s = await res.json()
-
-    document.getElementById('view-grid').classList.add('hidden')
-    const detalhe = document.getElementById('view-detalhe')
-    detalhe.classList.remove('hidden')
-
-    const unidade = s.tipo === 'temp' ? '°C' : '%'
-    const logHTML = s.log.length
-        ? [...s.log].reverse().map(l => `
-            <div class="log-item ${l.status}">
-                <span class="log-ts">${formatTs(l.ts)}</span>
-                <span>Status: <strong>${statusLabel(l.status)}</strong></span>
-                <span>${l.valor !== null ? l.valor + unidade : '—'}</span>
-            </div>`).join('')
-        : '<p>Sem eventos ainda.</p>'
-
-    detalhe.innerHTML = `
-        <header>
-            <span class="logo">SensorGrid</span>
-            <nav>
-                <button class="btn-voltar" onclick="voltarGrid()">← Voltar</button>
-            </nav>
-        </header>
-        <div class="container-detalhe">
-            <div class="detalhe-topo">
-                <div>
-                    <h1>${s.nome}</h1>
-                    <small>${s.id} · ${s.tipo === 'temp' ? 'Temperatura' : 'Umidade'} · ${s.modo}</small>
-                </div>
-                <span class="status-pill ${s.status_atual}">${statusLabel(s.status_atual)}</span>
-            </div>
-            <div class="detalhe-grid">
-                <div class="painel">
-                    <h3>Leitura atual</h3>
-                    <div class="valor-grande">${s.ultimo_valor !== null ? s.ultimo_valor + unidade : '—'}</div>
-                    <p>Faixa: ${s.min_val}${unidade} — ${s.max_val}${unidade}</p>
-                    <p>Falha configurada: ${s.falha || 'Nenhuma'}</p>
-                    <p>Última leitura: ${s.ultima_leitura ? formatTs(s.ultima_leitura) : '—'}</p>
-                </div>
-                <div class="painel">
-                    <h3>Log de eventos</h3>
-                    <div class="log-list">${logHTML}</div>
-                </div>
-            </div>
-        </div>
+// ═══════════════════════════════════════════
+// DETALHE DO SENSOR
+// ═══════════════════════════════════════════
+function atualizarHeaderDetalhe(s) {
+    const header = document.getElementById('header-principal')
+    if (!header) return
+    header.innerHTML = `
+        <button class="btn-voltar-header" onclick="voltarGrid()">← Voltar</button>
+        <a href="/" class="logo">⬡ SensorGrid</a>
+        <nav>
+            <a href="/" class="nav-link">Criar Sensor</a>
+            <a href="/gerenciar" class="nav-link ativo">Gerenciar</a>
+        </nav>
     `
+}
+
+function restaurarHeader() {
+    const header = document.getElementById('header-principal')
+    if (!header) return
+    header.innerHTML = `
+        <a href="/" class="logo">⬡ SensorGrid</a>
+        <nav>
+            <a href="/" class="nav-link">Criar Sensor</a>
+            <a href="/gerenciar" class="nav-link ativo">Gerenciar</a>
+        </nav>
+    `
+}
+
+async function abrirDetalhe(id) {
+    try {
+        const res = await fetch(`/api/sensores/${encodeURIComponent(id)}`)
+        const s   = await res.json()
+
+        document.getElementById('view-grid').classList.add('hidden')
+        const view = document.getElementById('view-detalhe')
+        view.classList.remove('hidden')
+        atualizarHeaderDetalhe(s)
+
+        const unidade = s.tipo === 'temp' ? '°C' : '%'
+        const status  = s.status_atual || 'ok'
+
+        const logHTML = s.log && s.log.length
+            ? [...s.log].reverse().map(l => `
+                <div class="log-item ${l.status}">
+                    <span class="log-ts">${formatTs(l.ts)}</span>
+                    <span class="log-msg">Status mudou para <strong>${STATUS_LABEL[l.status] || l.status}</strong>${l.origem === 'manual' ? ' <em>(manual)</em>' : ''}</span>
+                    <span class="log-val">${l.valor !== null ? l.valor + unidade : '—'}</span>
+                </div>`).join('')
+            : '<p class="sem-dados">Nenhum evento registrado ainda.</p>'
+
+        const histHTML = s.historico && s.historico.length
+            ? [...s.historico].slice(-10).reverse().map(h => `
+                <div class="log-item ${h.status}">
+                    <span class="log-ts">${formatTs(h.ts)}</span>
+                    <span class="log-origem">${h.origem === 'manual' ? '✎' : '⟳'}</span>
+                    <span class="log-val">${h.valor !== null ? h.valor + unidade : '—'}</span>
+                </div>`).join('')
+            : '<p class="sem-dados">Sem leituras ainda.</p>'
+
+        view.innerHTML = `
+            <div class="detalhe-wrap">
+                <div class="detalhe-hero">
+                    <div>
+                        <div class="detalhe-id">${s.id}</div>
+                        <h1 class="detalhe-nome">${s.nome}</h1>
+                        <div class="detalhe-meta">
+                            ${s.tipo === 'temp' ? '🌡 TEMPERATURA' : '💧 UMIDADE'} &nbsp;·&nbsp;
+                            ${s.modo === 'estufa' ? '🏠 ESTUFA' : '🌿 EXTERNO'} &nbsp;·&nbsp;
+                            criado ${formatTs(s.criado_em)}
+                        </div>
+                    </div>
+                    <span class="status-pill ${status} grande">${STATUS_LABEL[status] || status}</span>
+                </div>
+                <div class="detalhe-grid">
+                    <div class="painel">
+                        <h3>Leitura atual</h3>
+                        <div class="valor-grande ${status}">${s.ultimo_valor !== null ? s.ultimo_valor + unidade : '—'}</div>
+                        <div class="info-lista">
+                            <div class="info-row"><span>Faixa esperada</span><strong>${s.min_val}${unidade} — ${s.max_val}${unidade}</strong></div>
+                            <div class="info-row"><span>Configuração</span><strong>${FALHA_LABEL[s.falha || ''] || 'Sem falha'}</strong></div>
+                            <div class="info-row"><span>Total de leituras</span><strong>${s.historico ? s.historico.length : 0}</strong></div>
+                            <div class="info-row"><span>Última leitura</span><strong>${s.ultima_leitura ? formatTs(s.ultima_leitura) : '—'}</strong></div>
+                        </div>
+                    </div>
+                    <div class="painel">
+                        <h3>Últimas leituras <span style="font-size:9px;color:var(--text3);margin-left:4px">⟳ auto &nbsp; ✎ manual</span></h3>
+                        <div class="log-list">${histHTML}</div>
+                    </div>
+                    <div class="painel painel-full">
+                        <h3>Log de eventos</h3>
+                        <div class="log-list">${logHTML}</div>
+                    </div>
+                </div>
+            </div>
+        `
+    } catch(e) { console.error('Erro ao abrir detalhe:', e) }
 }
 
 function voltarGrid() {
     document.getElementById('view-detalhe').classList.add('hidden')
     document.getElementById('view-grid').classList.remove('hidden')
+    restaurarHeader()
 }
 
-//Criar sensor (gerenciar.html)
-function toggleCamposTipo() {
-    const tipo = document.getElementById('f-tipo').value
-    document.getElementById('campos-temp').classList.toggle('hidden', tipo !== 'temp')
-    document.getElementById('campos-umid').classList.toggle('hidden', tipo !== 'umid')
-}
-
-async function criarSensor() {
-    const tipo = document.getElementById('f-tipo').value
-    const modo = document.getElementById('f-modo').value
-    const falha = document.getElementById('f-falha').value || null
-    const min_val = tipo === 'temp'
-        ? document.getElementById('f-min').value
-        : document.getElementById('f-min-u').value
-    const max_val = tipo === 'temp'
-        ? document.getElementById('f-max').value
-        : document.getElementById('f-max-u').value
-
-    if (!min_val || !max_val) {
-        mostrarFeedback('Preencha a faixa esperada.', 'erro')
-        return
-    }
-    if (parseFloat(min_val) >= parseFloat(max_val)) {
-        mostrarFeedback('O mínimo deve ser menor que o máximo.', 'erro')
-        return
-    }
-
-    const res = await fetch('/api/sensores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo, modo, min_val, max_val, falha })
-    })
-    const sensor = await res.json()
-    mostrarFeedback(`${sensor.nome} criado com sucesso!`, 'ok')
-}
-
-function mostrarFeedback(msg, tipo) {
-    const el = document.getElementById('feedback-sensor')
-    el.textContent = msg
-    el.className = `feedback ${tipo}`
-}
-
-// Irrigação
-
-async function registrarIrrigacao() {
-    await fetch('/api/irrigacao', { method: 'POST' })
-    carregarIrrigacao()
-}
-
-async function carregarIrrigacao() {
-    const res = await fetch('/api/irrigacao')
-    const lista = await res.json()
-    const el = document.getElementById('historico-irrigacao')
-    if (!el) return
-    el.innerHTML = lista.length
-        ? [...lista].reverse().map(i => `
-            <div class="log-item ok">
-                <span class="log-ts">${formatTs(i.ts)}</span>
-                <span>💧 Irrigação registrada</span>
-            </div>`).join('')
-        : '<p>Nenhuma irrigação registrada.</p>'
-}
-
-// Helpers 
-
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
 function formatTs(ts) {
     return new Date(ts).toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit',

@@ -1,8 +1,12 @@
 {
-    "accuweather":{
+    "accuweather": {
         "chave": "zpka_c59f7954292b44368f2ddf94609385d4_57640ed6",
         "id_cidade": "41291"
     },
-
-    "cache_minutos": 10
+    "cache_minutos": 30,
+    "estufa": {
+        "temp_min": 18,
+        "temp_max": 30,
+        "temp_media": 24
+    }
 }

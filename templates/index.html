@@ -1,35 +1,136 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-modo="externo">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="templates/style.css">
     <title>SensorGrid</title>
 </head>
 <body>
 
 <header>
-    <span class="logo">SensorGrid</span>
-    <div class="toggle-modo">
-        <button id="btn-externo" class="toggle-btn ativo" onclick="trocarModo('externo')">🌿 Externo</button>
-        <button id="btn-estufa" class="toggle-btn" onclick="trocarModo('estufa')">🏠 Estufa</button>
-    </div>
+    <a href="/" class="logo">⬡ SensorGrid</a>
     <nav>
-        <a href="/" class="nav-link ativo">Sensores</a>
+        <a href="/" class="nav-link ativo">Criar Sensor</a>
         <a href="/gerenciar" class="nav-link">Gerenciar</a>
+        <button class="btn-acoes" onclick="abrirModal()">Ações rápidas</button>
     </nav>
 </header>
 
-<div id="view-grid">
-    <div class="grid" id="sensor-grid"></div>
-    <div class="empty-state hidden" id="empty-state">
-        <p>Nenhum sensor para este ambiente.</p>
-        <a href="/gerenciar">Criar sensor</a>
+
+<div class="modal-overlay hidden" id="modal-overlay" onclick="fecharModalOverlay(event)">
+    <div class="modal">
+
+        <div class="modal-header">
+            <span class="modal-titulo">Ações Rápidas</span>
+            <button class="modal-fechar" onclick="fecharModal()">✕</button>
+        </div>
+
+        <!-- Irrigação -->
+        <div class="modal-secao">
+            <div class="modal-secao-label">
+                <span class="modal-dot azul"></span>REGISTRAR IRRIGAÇÃO
+            </div>
+            <p class="modal-desc">O sistema verifica automaticamente se sensores de umidade da estufa estão abaixo do esperado.</p>
+            <input type="text" id="irrigacao-obs" class="input-simples" placeholder="Observação (opcional)">
+            <button class="btn-modal azul" onclick="registrarIrrigacao()">💧 Registrar irrigação</button>
+            <div class="modal-feedback hidden" id="fb-irrigacao"></div>
+        </div>
+
+        <div class="modal-divisor"></div>
+
+        <!-- Temperatura estufa -->
+        <div class="modal-secao">
+            <div class="modal-secao-label">
+                <span class="modal-dot verde"></span>TEMPERATURA DA ESTUFA
+            </div>
+            <p class="modal-desc">Atualiza todos os sensores de temperatura da estufa com uma leitura manual. Use quando o AccuWeather não reflete a realidade interna.</p>
+            <div class="input-row" style="gap:10px">
+                <div class="input-wrap" style="flex:1">
+                    <span class="input-label">°C</span>
+                    <input type="number" id="estufa-temp" class="input-wrap input" placeholder="ex: 27" step="0.1" style="padding-left:36px;width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:10px 12px 10px 36px;font-family:var(--mono);font-size:14px;outline:none;transition:border-color .15s">
+                </div>
+            </div>
+            <button class="btn-modal verde" onclick="registrarTempEstufa()" style="margin-top:10px">🌡 Atualizar temperatura</button>
+            <div class="modal-feedback hidden" id="fb-estufa"></div>
+        </div>
+
+
     </div>
 </div>
 
-<div id="view-detalhe" class="hidden"></div>
+<main class="main-criar">
+    <div class="criar-hero">
+        <h1>Novo <span class="accent">Sensor</span></h1>
+    </div>
 
-<script src="script.js"></script>
+    <div class="form-card">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Tipo de sensor</label>
+                <select id="select-tipo" class="select-field" onchange="toggleTipo()">
+                    <option value="temp">TEMPERATURA</option>
+                    <option value="umid">UMIDADE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Ambiente</label>
+                <select id="select-modo" class="select-field">
+                    <option value="externo">EXTERNO</option>
+                    <option value="estufa">ESTUFA</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" id="grupo-faixa-temp">
+            <label>Faixa esperada de temperatura (°C)</label>
+            <div class="input-row">
+                <div class="input-wrap">
+                    <span class="input-label">mín</span>
+                    <input type="number" id="f-min-temp" placeholder="ex: 18">
+                </div>
+                <span class="input-sep">—</span>
+                <div class="input-wrap">
+                    <span class="input-label">máx</span>
+                    <input type="number" id="f-max-temp" placeholder="ex: 30">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group hidden" id="grupo-faixa-umid">
+            <label>Faixa esperada de umidade (%)</label>
+            <div class="input-row">
+                <div class="input-wrap">
+                    <span class="input-label">mín</span>
+                    <input type="number" id="f-min-umid" placeholder="ex: 40">
+                </div>
+                <span class="input-sep">—</span>
+                <div class="input-wrap">
+                    <span class="input-label">máx</span>
+                    <input type="number" id="f-max-umid" placeholder="ex: 80">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de falha simulada</label>
+            <select id="select-falha" class="select-field">
+                <option value="">SEM FALHA</option>
+                <option value="variacao">VARIAÇÃO</option>
+                <option value="erro_deteccao">ERRO DETECÇÃO</option>
+                <option value="sem_resposta">SEM RESPOSTA</option>
+            </select>
+        </div>
+
+        <div class="form-footer">
+            <button class="btn-criar" onclick="criarSensor()">+ Criar Sensor</button>
+            <div class="feedback hidden" id="feedback"></div>
+        </div>
+    </div>
+</main>
+
+<script src="templates/script.js"></script>
 </body>
 </html>
