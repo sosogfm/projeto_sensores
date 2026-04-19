@@ -1,50 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br" data-modo="externo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title>SensorGrid</title>
 </head>
 <body>
 
-<div class="container">
-
-
-    <div class="criar1">
-        <h1 id="tit1">Criar Sensor sem Falha</h1>
-        <input type="number" id="holder_sensor_funcional" placeholder="número sensores" min="1" max="9999">
-        <select class="tipo">
-        <option value="">definir tipo sensor</option>
-        <option value="temp">sensor de temperatura</option>
-        <option value="umid">sensor de umidade</option>
-        </select>
-        <div id="campos-temperatura" style="display:none">
-         <input type="number" placeholder="mínima (°C)">
-         <input type="number" placeholder="máxima (°C)">
-        </div>
-
-    <div id="campos-umidade" style="display:none">
-        <input type="number" placeholder="mínima (%)">
-        <input type="number" placeholder="máxima (%)">
-        </div>  
-        <button id="btnCriar" onclick="addSensor()">Criar</button>
+<header>
+    <span class="logo">SensorGrid</span>
+    <div class="toggle-modo">
+        <button id="btn-externo" class="toggle-btn ativo" onclick="trocarModo('externo')">🌿 Externo</button>
+        <button id="btn-estufa" class="toggle-btn" onclick="trocarModo('estufa')">🏠 Estufa</button>
     </div>
+    <nav>
+        <a href="/" class="nav-link ativo">Sensores</a>
+        <a href="/gerenciar" class="nav-link">Gerenciar</a>
+    </nav>
+</header>
 
-
-    <div class="criar2">
-        <h1 id="tit2">Criar Sensor com Falha</h1>
-        <input type="number" id="holder_sensor_falha" placeholder="número sensores" min="1" max="9999">
-        <select class="tipo_falha">
-        <option value="">definir tipo da falha</option>
-        <option value="temp">temperatura</option>
-        <option value="umid">umidade</option>
-        <option value="no-resp">falta de resposta</option>
-        </select>
-        <button id="btnCriar" onclick="addSensor()">Criar</button>
+<div id="view-grid">
+    <div class="grid" id="sensor-grid"></div>
+    <div class="empty-state hidden" id="empty-state">
+        <p>Nenhum sensor para este ambiente.</p>
+        <a href="/gerenciar">Criar sensor</a>
     </div>
 </div>
 
-    <script src="script.js"></script>
+<div id="view-detalhe" class="hidden"></div>
+
+<script src="script.js"></script>
 </body>
 </html>

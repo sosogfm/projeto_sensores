@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-modo="externo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>SensorGrid — Gerenciar</title>
+</head>
+<body>
+
+<header>
+    <span class="logo">SensorGrid</span>
+    <div class="toggle-modo">
+        <button id="btn-externo" class="toggle-btn ativo" onclick="trocarModo('externo')">🌿 Externo</button>
+        <button id="btn-estufa" class="toggle-btn" onclick="trocarModo('estufa')">🏠 Estufa</button>
+    </div>
+    <nav>
+        <a href="/" class="nav-link">Sensores</a>
+        <a href="/gerenciar" class="nav-link ativo">Gerenciar</a>
+    </nav>
+</header>
+
+<div class="container-gerenciar">
+
+    <section class="painel">
+        <h2>Criar Sensor</h2>
+        <div class="form-group">
+            <label>Tipo</label>
+            <select id="f-tipo" onchange="toggleCamposTipo()">
+                <option value="temp">🌡 Temperatura</option>
+                <option value="umid">💧 Umidade</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Modo</label>
+            <select id="f-modo">
+                <option value="externo">🌿 Externo</option>
+                <option value="estufa">🏠 Estufa</option>
+            </select>
+        </div>
+        <div class="form-group" id="campos-temp">
+            <label>Faixa esperada (°C)</label>
+            <div class="input-row">
+                <input type="number" id="f-min" placeholder="mínima">
+                <input type="number" id="f-max" placeholder="máxima">
+            </div>
+        </div>
+        <div class="form-group hidden" id="campos-umid">
+            <label>Faixa esperada (%)</label>
+            <div class="input-row">
+                <input type="number" id="f-min-u" placeholder="mínima">
+                <input type="number" id="f-max-u" placeholder="máxima">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Falha</label>
+            <select id="f-falha">
+                <option value="">Sem falha</option>
+                <option value="variacao">Variação</option>
+                <option value="erro_deteccao">Erro de detecção</option>
+                <option value="sem_resposta">Sem resposta</option>
+            </select>
+        </div>
+        <button class="btn-primary" onclick="criarSensor()">Criar Sensor</button>
+        <p class="feedback hidden" id="feedback-sensor"></p>
+    </section>
+
+    <section class="painel">
+        <h2>Irrigação</h2>
+        <button class="btn-primary" onclick="registrarIrrigacao()">💧 Registrar irrigação agora</button>
+        <div class="historico-irrigacao" id="historico-irrigacao">
+            <!-- injetado pelo JS -->
+        </div>
+    </section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
