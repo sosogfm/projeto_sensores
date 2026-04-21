@@ -10,7 +10,6 @@
 </head>
 <body>
 
-<!-- Header único — muda de conteúdo via JS -->
 <header id="header-principal">
     <a href="/" class="logo">⬡ SensorGrid</a>
     <nav>
@@ -19,7 +18,6 @@
     </nav>
 </header>
 
-<!-- TELA: grid de sensores -->
 <div id="view-grid">
     <div class="gerenciar-toolbar">
         <div class="filtros-wrap">
@@ -36,7 +34,10 @@
                 <button class="filtro-btn" onclick="filtrarTipo('umid', this)">💧 Umidade</button>
             </div>
         </div>
-        <div class="stats" id="stats-bar"></div>
+        <div style="display:flex;align-items:center;gap:12px">
+            <div class="stats" id="stats-bar"></div>
+            <button class="btn-leitura-geral" onclick="leituraGeral()">Realizar leitura</button>
+        </div>
     </div>
 
     <div class="grid" id="sensor-grid"></div>
@@ -48,7 +49,6 @@
     </div>
 </div>
 
-<!-- TELA: detalhe do sensor -->
 <div id="view-detalhe" class="hidden"></div>
 
 <script src="templates/script.js"></script>

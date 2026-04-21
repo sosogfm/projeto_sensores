@@ -52,7 +52,7 @@ async function criarSensor() {
         })
         if (!res.ok) throw new Error()
         const sensor = await res.json()
-        showFeedback(`${sensor.nome} criado com sucesso!`, 'ok')
+        showFeedback(`${sensor.nome} criado! Valor inicial: ${sensor.ultimo_valor !== null ? sensor.ultimo_valor + (tipo === 'temp' ? '°C' : '%') : '—'}`, 'ok')
         document.getElementById('f-min-temp').value = ''
         document.getElementById('f-max-temp').value = ''
         document.getElementById('f-min-umid').value = ''
@@ -116,7 +116,7 @@ async function registrarIrrigacao() {
         const data = await res.json()
         let msg = '💧 Irrigação registrada!'
         if (data.alertas_umidade?.length > 0) {
-            msg += ` ⚠ Atenção: ${data.alertas_umidade.length} sensor(es) com umidade abaixo do esperado mesmo após irrigação — verifique.`
+            msg += ` ⚠ Atenção: ${data.alertas_umidade.length} sensor(es) com umidade abaixo do esperado.`
         }
         mostrarFbModal('fb-irrigacao', msg, data.alertas_umidade?.length > 0 ? 'alerta' : 'ok')
         document.getElementById('irrigacao-obs').value = ''
@@ -139,6 +139,7 @@ async function registrarTempEstufa() {
         } else {
             mostrarFbModal('fb-estufa', `🌡 ${n} sensor(es) atualizado(s) com ${val}°C`, 'ok')
             document.getElementById('estufa-temp').value = ''
+            if (document.getElementById('sensor-grid')) await carregarSensores()
         }
     } catch { mostrarFbModal('fb-estufa', 'Erro ao atualizar.', 'erro') }
 }
@@ -157,7 +158,7 @@ function mostrarFbModal(id, msg, tipo) {
 async function carregarSensores() {
     try {
         const res = await fetch('/api/sensores')
-        sensores  = await res.json()  // já vem ordenado: mais recente primeiro
+        sensores  = await res.json()
         renderGrid()
         renderStats()
     } catch(e) { console.error('Erro ao carregar sensores:', e) }
@@ -239,26 +240,53 @@ function criarCard(s) {
     return div
 }
 
-async function deletarSensor(e, id) {
-    e.stopPropagation()  // não abre o detalhe
+async function deletarSensor(e, id, deDetalhe = false) {
+    e.stopPropagation()
     if (!confirm(`Excluir sensor ${id}? Esta ação não pode ser desfeita.`)) return
     try {
         const res = await fetch(`/api/sensores/${encodeURIComponent(id)}`, { method: 'DELETE' })
         if (!res.ok) throw new Error()
         sensores = sensores.filter(s => s.id !== id)
+        if (deDetalhe) voltarGrid()
         renderGrid()
         renderStats()
     } catch { alert('Erro ao excluir sensor.') }
 }
 
-// ═══════════════════════════════════════════
-// DETALHE DO SENSOR
-// ═══════════════════════════════════════════
-function atualizarHeaderDetalhe(s) {
+// lwitura geral
+async function leituraGeral() {
+    const btn = document.querySelector('.btn-leitura-geral')
+    if (btn) { btn.textContent = 'Atualizando...'; btn.disabled = true }
+    try {
+        for (const s of sensores) {
+            if (s.modo === 'externo' || (s.modo === 'estufa' && s.tipo === 'umid')) {
+                await fetch(`/api/sensores/${encodeURIComponent(s.id)}/leitura`, { method: 'POST' })
+            }
+        }
+        await carregarSensores()
+    } finally {
+        if (btn) { btn.textContent = 'Realizar leitura'; btn.disabled = false }
+    }
+}
+
+// leitura manual
+async function leituraManual(id) {
+    try {
+        const res = await fetch(`/api/sensores/${encodeURIComponent(id)}/leitura`, { method: 'POST' })
+        if (!res.ok) {
+            const err = await res.json()
+            alert(err.erro || 'Erro ao realizar leitura.')
+            return
+        }
+        await abrirDetalhe(id)
+    } catch { alert('Erro ao realizar leitura.') }
+}
+
+// detalhe sensor
+function atualizarHeaderDetalhe() {
     const header = document.getElementById('header-principal')
     if (!header) return
     header.innerHTML = `
-        <button class="btn-voltar-header" onclick="voltarGrid()">← Voltar</button>
         <a href="/" class="logo">⬡ SensorGrid</a>
         <nav>
             <a href="/" class="nav-link">Criar Sensor</a>
@@ -287,7 +315,7 @@ async function abrirDetalhe(id) {
         document.getElementById('view-grid').classList.add('hidden')
         const view = document.getElementById('view-detalhe')
         view.classList.remove('hidden')
-        atualizarHeaderDetalhe(s)
+        atualizarHeaderDetalhe()
 
         const unidade = s.tipo === 'temp' ? '°C' : '%'
         const status  = s.status_atual || 'ok'
@@ -310,7 +338,16 @@ async function abrirDetalhe(id) {
                 </div>`).join('')
             : '<p class="sem-dados">Sem leituras ainda.</p>'
 
+        const podeLeiturar = s.modo === 'externo' || (s.modo === 'estufa' && s.tipo === 'umid')
+
         view.innerHTML = `
+            <div class="detalhe-toolbar">
+                <button class="btn-voltar" onclick="voltarGrid()">← Voltar</button>
+                <div style="display:flex;align-items:center;gap:10px">
+                    ${podeLeiturar ? `<button class="btn-leitura" onclick="leituraManual('${s.id}')">Realizar leitura</button>` : ''}
+                    <button class="btn-deletar-detalhe" onclick="deletarSensor(event, '${s.id}', true)">✕ Excluir</button>
+                </div>
+            </div>
             <div class="detalhe-wrap">
                 <div class="detalhe-hero">
                     <div>
@@ -355,9 +392,7 @@ function voltarGrid() {
     restaurarHeader()
 }
 
-// ═══════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════
+// helpers
 function formatTs(ts) {
     return new Date(ts).toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit',
