@@ -53,18 +53,15 @@ def aplicar_falha(valor, falha, min_val, max_val, criado_em):
     faixa = max_val - min_val
     horas_vida = max((datetime.now() - datetime.fromisoformat(criado_em)).total_seconds() / 3600, 0)
 
-    # Corrosão gradual afeta TODOS os sensores — quase imperceptível no início
+    # Corrosão gradual em TODOS os sensores
     corrosao = horas_vida * 0.002 * random.uniform(0.8, 1.2)
 
     if falha == "variacao":
-        # Pode estar dentro da faixa mas vai piorando com o tempo
         desvio = faixa * 0.15 + (horas_vida * 0.01)
         return round(valor + random.uniform(-desvio, desvio) + corrosao, 1)
 
     elif falha == "erro_deteccao":
-        # Pode começar dentro da faixa mas rapidamente sai
         if horas_vida < 0.5:
-            # No início pode ainda estar dentro da faixa
             return round(valor + random.uniform(-faixa * 0.1, faixa * 0.1), 1)
         return round(random.choice([
             min_val - random.uniform(5, 20) - corrosao * 5,
@@ -72,7 +69,6 @@ def aplicar_falha(valor, falha, min_val, max_val, criado_em):
         ]), 1)
 
     elif falha == "sem_resposta":
-        # Quanto mais velho, mais chance de não responder
         chance_resposta = max(0, 1 - (horas_vida * 0.05))
         if random.random() > chance_resposta:
             return None
@@ -136,6 +132,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(job_leitura_automatica, 'interval', minutes=30, id='leitura_auto')
 scheduler.start()
 
+# Rotas de páginas        
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -144,6 +141,7 @@ def index():
 def gerenciar():
     return render_template("gerenciar.html")
 
+# API sensores              
 @app.route("/api/sensores", methods=["GET"])
 def listar_sensores():
     sensores = carregar_dados()["sensores"]
@@ -177,6 +175,10 @@ def criar_sensor():
     elif sensor["modo"] == "estufa" and sensor["tipo"] == "umid":
         valor_base = random.uniform(sensor["min_val"], sensor["max_val"])
         atualizar_sensor(sensor, valor_base, origem="auto")
+    elif sensor["modo"] == "estufa" and sensor["tipo"] == "temp":
+        ultima_temp = config.get("estufa", {}).get("temp_media")
+        if ultima_temp is not None:
+            atualizar_sensor(sensor, float(ultima_temp), origem="auto")
     data["sensores"].append(sensor)
     salvar_dados(data)
     return jsonify(sensor), 201
@@ -212,6 +214,7 @@ def deletar_sensor(id_sensor):
     salvar_dados(data)
     return jsonify({"ok": True})
 
+# leitura manual (externo ou estufa umid)
 @app.route("/api/sensores/<path:id_sensor>/leitura", methods=["POST"])
 def leitura_manual(id_sensor):
     data   = carregar_dados()
@@ -229,10 +232,49 @@ def leitura_manual(id_sensor):
     salvar_dados(data)
     return jsonify({"valor": sensor["ultimo_valor"], "status": sensor["status_atual"]})
 
+# irrigação de sensor específico 
+@app.route("/api/sensores/<path:id_sensor>/irrigacao", methods=["POST"])
+def irrigacao_sensor(id_sensor):
+    data   = carregar_dados()
+    sensor = next((s for s in data["sensores"] if s["id"] == id_sensor), None)
+    if not sensor:
+        return jsonify({"erro": "não encontrado"}), 404
+    entrada = {
+        "ts":        datetime.now().isoformat(),
+        "sensor_id": id_sensor,
+        "tipo":      "individual"
+    }
+    data.setdefault("historico_irrigacao", []).append(entrada)
+    data["historico_irrigacao"] = data["historico_irrigacao"][-100:]
+    salvar_dados(data)
+    return jsonify({"ok": True, "ts": entrada["ts"]})
+
+# temperatura de sensor específico 
+@app.route("/api/sensores/<path:id_sensor>/temperatura", methods=["POST"])
+def temperatura_sensor(id_sensor):
+    data   = carregar_dados()
+    sensor = next((s for s in data["sensores"] if s["id"] == id_sensor), None)
+    if not sensor:
+        return jsonify({"erro": "não encontrado"}), 404
+    body  = request.json or {}
+    valor = body.get("valor")
+    if valor is None:
+        return jsonify({"erro": "campo 'valor' obrigatório"}), 400
+    # registra no histórico do sensor como evento manual mas NÃO faz leitura
+    agora = datetime.now().isoformat()
+    sensor.setdefault("historico_temp_manual", []).append({
+        "ts": agora, "valor": float(valor)
+    })
+    sensor["historico_temp_manual"] = sensor["historico_temp_manual"][-50:]
+    salvar_dados(data)
+    return jsonify({"ok": True, "ts": agora, "valor": valor})
+
+#API clima    
 @app.route("/api/clima", methods=["GET"])
 def get_clima():
     return jsonify(buscar_clima_accuweather())
 
+#API irrigação global  
 @app.route("/api/irrigacao", methods=["GET"])
 def get_irrigacao():
     return jsonify(carregar_dados()["historico_irrigacao"])
@@ -240,18 +282,22 @@ def get_irrigacao():
 @app.route("/api/irrigacao", methods=["POST"])
 def registrar_irrigacao():
     data = carregar_dados()
-    body = request.json or {}
     alertas = []
     for s in data["sensores"]:
         if s["tipo"] == "umid" and s["modo"] == "estufa" and s["ultimo_valor"] is not None:
             if s["ultimo_valor"] < s["min_val"]:
                 alertas.append({"sensor_id": s["id"], "sensor_nome": s["nome"], "valor": s["ultimo_valor"], "min_val": s["min_val"]})
-    entrada = {"ts": datetime.now().isoformat(), "observacao": body.get("observacao", ""), "alertas_umidade": alertas}
+    entrada = {
+        "ts":              datetime.now().isoformat(),
+        "tipo":            "global",
+        "alertas_umidade": alertas
+    }
     data["historico_irrigacao"].append(entrada)
     data["historico_irrigacao"] = data["historico_irrigacao"][-100:]
     salvar_dados(data)
     return jsonify(entrada), 201
 
+# API temperatura estufa global 
 @app.route("/api/estufa/temperatura", methods=["POST"])
 def registrar_temp_estufa():
     data  = carregar_dados()
@@ -268,6 +314,7 @@ def registrar_temp_estufa():
     salvar_dados(data)
     return jsonify({"valor": valor, "ts": datetime.now().isoformat(), "atualizados": atualizados}), 200
 
+#  Scheduler status 
 @app.route("/api/scheduler/status", methods=["GET"])
 def scheduler_status():
     data    = carregar_dados()

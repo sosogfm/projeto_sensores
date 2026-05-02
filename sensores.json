@@ -1,5 +1,5 @@
 {
-  "contador_sensores": 16,
+  "contador_sensores": 25,
   "historico_irrigacao": [
     {
       "ts": "2026-04-19T16:47:46.988643"
@@ -18,606 +18,126 @@
       "ts": "2026-04-19T18:53:02.674581",
       "observacao": "",
       "alertas_umidade": []
+    },
+    {
+      "ts": "2026-04-21T16:24:50.359719",
+      "observacao": "",
+      "alertas_umidade": []
+    },
+    {
+      "ts": "2026-04-21T16:58:40.792695",
+      "observacao": "",
+      "alertas_umidade": [
+        {
+          "sensor_id": "S0018",
+          "sensor_nome": "Sensor-S0018",
+          "valor": 28.1,
+          "min_val": 30.0
+        }
+      ]
+    },
+    {
+      "ts": "2026-04-21T16:59:34.985805",
+      "observacao": "ahaha",
+      "alertas_umidade": [
+        {
+          "sensor_id": "S0018",
+          "sensor_nome": "Sensor-S0018",
+          "valor": 28.1,
+          "min_val": 30.0
+        }
+      ]
+    },
+    {
+      "ts": "2026-04-21T16:59:41.514718",
+      "observacao": "",
+      "alertas_umidade": [
+        {
+          "sensor_id": "S0018",
+          "sensor_nome": "Sensor-S0018",
+          "valor": 28.1,
+          "min_val": 30.0
+        }
+      ]
+    },
+    {
+      "ts": "2026-04-21T17:19:33.769223",
+      "sensor_id": "S0018",
+      "tipo": "individual"
+    },
+    {
+      "ts": "2026-04-21T17:20:53.609261",
+      "tipo": "global",
+      "alertas_umidade": [
+        {
+          "sensor_id": "S0018",
+          "sensor_nome": "Sensor-S0018",
+          "valor": 28.1,
+          "min_val": 30.0
+        }
+      ]
+    },
+    {
+      "ts": "2026-04-21T17:34:22.806115",
+      "sensor_id": "S0021",
+      "tipo": "individual"
     }
   ],
   "sensores": [
     {
-      "id": "S0007",
-      "nome": "Sensor-S0007",
-      "tipo": "temp",
-      "modo": "estufa",
-      "min_val": 22.0,
-      "max_val": 30.0,
-      "falha": null,
-      "criado_em": "2026-04-19T18:16:35.272409",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:16:40.015857",
-          "valor": 27.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:20:47.360969",
-          "valor": 27.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:25:31.421649",
-          "valor": 12.0,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:25:44.257297",
-          "valor": 24.0,
-          "status": "ok",
-          "origem": "manual"
-        }
-      ],
-      "log": [
-        {
-          "ts": "2026-04-19T18:25:31.421649",
-          "status": "erro",
-          "valor": 12.0,
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:25:44.257297",
-          "status": "ok",
-          "valor": 24.0,
-          "origem": "manual"
-        }
-      ],
-      "status_atual": "ok",
-      "ultimo_valor": 24.0,
-      "ultima_leitura": "2026-04-19T18:25:44.257297"
-    },
-    {
-      "id": "S0009",
-      "nome": "Sensor-S0009",
+      "id": "S0019",
+      "nome": "Sensor-S0019",
       "tipo": "temp",
       "modo": "externo",
       "min_val": 18.0,
-      "max_val": 30.0,
+      "max_val": 31.0,
       "falha": "variacao",
-      "criado_em": "2026-04-19T18:28:10.599897",
+      "criado_em": "2026-04-21T17:21:48.660096",
       "historico": [
         {
-          "ts": "2026-04-19T18:28:12.805355",
-          "valor": 26.4,
+          "ts": "2026-04-21T17:21:50.581193",
+          "valor": 23.3,
           "status": "ok",
           "origem": "auto"
         },
         {
-          "ts": "2026-04-19T18:28:50.212401",
-          "valor": 23.5,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:28:57.459056",
-          "valor": 25.1,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:30:03.384956",
-          "valor": 24.9,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:32:28.961213",
-          "valor": 24.2,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:32:36.457901",
+          "ts": "2026-04-21T17:23:07.589753",
           "valor": 26.7,
           "status": "ok",
           "origem": "manual"
         },
         {
-          "ts": "2026-04-19T18:32:47.426130",
-          "valor": 25.3,
+          "ts": "2026-04-21T17:27:36.249810",
+          "valor": 26.6,
           "status": "ok",
           "origem": "manual"
         },
         {
-          "ts": "2026-04-19T18:35:27.676445",
-          "valor": 25.3,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:43:03.483691",
-          "valor": 26.4,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:36.905306",
-          "valor": 26.4,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:46:38.104216",
-          "valor": 24.2,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.420837",
-          "valor": 25.4,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905469",
-          "valor": 26.2,
-          "status": "ok",
-          "origem": "auto"
-        }
-      ],
-      "log": [],
-      "status_atual": "ok",
-      "ultimo_valor": 26.2,
-      "ultima_leitura": "2026-04-19T19:12:59.905469"
-    },
-    {
-      "id": "S0010",
-      "nome": "Sensor-S0010",
-      "tipo": "temp",
-      "modo": "externo",
-      "min_val": 18.0,
-      "max_val": 30.0,
-      "falha": "erro_deteccao",
-      "criado_em": "2026-04-19T18:28:24.236101",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:28:25.557781",
-          "valor": 10.9,
-          "status": "erro",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:28:48.624700",
-          "valor": 11.9,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:28:55.500514",
-          "valor": 0.1,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:32:26.575375",
-          "valor": 4.1,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:32:34.856714",
-          "valor": 6.0,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:32:46.280069",
-          "valor": 43.4,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:25.741149",
-          "valor": 10.6,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:43:03.562165",
-          "valor": 43.4,
-          "status": "erro",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:34.649373",
-          "valor": 25.7,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:46:35.845652",
+          "ts": "2026-04-21T17:28:05.071519",
           "valor": 25.4,
           "status": "ok",
           "origem": "manual"
         },
         {
-          "ts": "2026-04-19T18:51:01.461738",
-          "valor": 26.1,
+          "ts": "2026-04-21T17:34:34.291237",
+          "valor": 24.5,
           "status": "ok",
           "origem": "manual"
         },
         {
-          "ts": "2026-04-19T19:11:00.420886",
-          "valor": 40.1,
-          "status": "erro",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905516",
-          "valor": 45.2,
-          "status": "erro",
-          "origem": "auto"
-        }
-      ],
-      "log": [
-        {
-          "ts": "2026-04-19T18:28:25.557781",
-          "status": "erro",
-          "valor": 10.9,
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:34.649373",
-          "status": "ok",
-          "valor": 25.7,
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.420886",
-          "status": "erro",
-          "valor": 40.1,
-          "origem": "auto"
-        }
-      ],
-      "status_atual": "erro",
-      "ultimo_valor": 45.2,
-      "ultima_leitura": "2026-04-19T19:12:59.905516"
-    },
-    {
-      "id": "S0011",
-      "nome": "Sensor-S0011",
-      "tipo": "umid",
-      "modo": "externo",
-      "min_val": 40.0,
-      "max_val": 80.0,
-      "falha": null,
-      "criado_em": "2026-04-19T18:33:38.171486",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:33:39.896726",
-          "valor": 60,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:35:24.039786",
-          "valor": 60,
+          "ts": "2026-04-21T17:40:42.754568",
+          "valor": 23.2,
           "status": "ok",
           "origem": "manual"
         },
         {
-          "ts": "2026-04-19T18:35:41.021465",
-          "valor": 60,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:43:03.562254",
-          "valor": 60,
+          "ts": "2026-04-21T17:44:07.768457",
+          "valor": 25.5,
           "status": "ok",
           "origem": "auto"
         },
         {
-          "ts": "2026-04-19T18:44:32.428007",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:46:32.942236",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.420973",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905550",
-          "valor": 60,
-          "status": "ok",
-          "origem": "auto"
-        }
-      ],
-      "log": [],
-      "status_atual": "ok",
-      "ultimo_valor": 60,
-      "ultima_leitura": "2026-04-19T19:12:59.905550"
-    },
-    {
-      "id": "S0012",
-      "nome": "Sensor-S0012",
-      "tipo": "umid",
-      "modo": "externo",
-      "min_val": 40.0,
-      "max_val": 80.0,
-      "falha": "erro_deteccao",
-      "criado_em": "2026-04-19T18:33:48.640931",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:33:49.890738",
-          "valor": 24.4,
-          "status": "erro",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:35:22.033631",
-          "valor": 99.0,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:37.961755",
-          "valor": 88.9,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:43.894471",
-          "valor": 89.5,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:46.764654",
-          "valor": 88.3,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:50.106039",
-          "valor": 92.2,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:58.692749",
-          "valor": 22.4,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:43:03.562275",
-          "valor": 28.6,
-          "status": "alerta",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:30.438770",
-          "valor": 60.6,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:46:28.953707",
-          "valor": 61.8,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.420996",
-          "valor": 31.8,
-          "status": "alerta",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905569",
-          "valor": 32.1,
-          "status": "alerta",
-          "origem": "auto"
-        }
-      ],
-      "log": [
-        {
-          "ts": "2026-04-19T18:33:49.890738",
-          "status": "erro",
-          "valor": 24.4,
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:43:03.562275",
-          "status": "alerta",
-          "valor": 28.6,
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:30.438770",
-          "status": "ok",
-          "valor": 60.6,
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.420996",
-          "status": "alerta",
-          "valor": 31.8,
-          "origem": "auto"
-        }
-      ],
-      "status_atual": "alerta",
-      "ultimo_valor": 32.1,
-      "ultima_leitura": "2026-04-19T19:12:59.905569"
-    },
-    {
-      "id": "S0013",
-      "nome": "Sensor-S0013",
-      "tipo": "umid",
-      "modo": "externo",
-      "min_val": 55.0,
-      "max_val": 99.0,
-      "falha": "sem_resposta",
-      "criado_em": "2026-04-19T18:33:55.653726",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:33:57.115871",
-          "valor": null,
-          "status": "erro",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:35:19.989574",
-          "valor": null,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:35:36.784294",
-          "valor": null,
-          "status": "erro",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:43:03.562311",
-          "valor": null,
-          "status": "erro",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:09.765430",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:44:17.800945",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:44:27.973202",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T18:46:25.584167",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.421021",
-          "valor": 60.0,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905592",
-          "valor": null,
-          "status": "erro",
-          "origem": "auto"
-        }
-      ],
-      "log": [
-        {
-          "ts": "2026-04-19T18:33:57.115871",
-          "status": "erro",
-          "valor": null,
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T18:44:09.765430",
-          "status": "ok",
-          "valor": 60.0,
-          "origem": "manual"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905592",
-          "status": "erro",
-          "valor": null,
-          "origem": "auto"
-        }
-      ],
-      "status_atual": "erro",
-      "ultimo_valor": null,
-      "ultima_leitura": "2026-04-19T19:12:59.905592"
-    },
-    {
-      "id": "S0014",
-      "nome": "Sensor-S0014",
-      "tipo": "temp",
-      "modo": "externo",
-      "min_val": 18.0,
-      "max_val": 30.0,
-      "falha": "erro_deteccao",
-      "criado_em": "2026-04-19T18:50:20.575435",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:50:22.430101",
-          "valor": 26.1,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.421038",
-          "valor": 24.8,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905610",
-          "valor": 41.1,
-          "status": "erro",
-          "origem": "auto"
-        }
-      ],
-      "log": [
-        {
-          "ts": "2026-04-19T19:12:59.905610",
-          "status": "erro",
-          "valor": 41.1,
-          "origem": "auto"
-        }
-      ],
-      "status_atual": "erro",
-      "ultimo_valor": 41.1,
-      "ultima_leitura": "2026-04-19T19:12:59.905610"
-    },
-    {
-      "id": "S0015",
-      "nome": "Sensor-S0015",
-      "tipo": "temp",
-      "modo": "externo",
-      "min_val": 18.0,
-      "max_val": 30.0,
-      "falha": "variacao",
-      "criado_em": "2026-04-19T18:52:21.207591",
-      "historico": [
-        {
-          "ts": "2026-04-19T18:52:22.682170",
-          "valor": 23.9,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:11:00.421054",
-          "valor": 25.4,
-          "status": "ok",
-          "origem": "auto"
-        },
-        {
-          "ts": "2026-04-19T19:12:59.905636",
+          "ts": "2026-04-21T17:44:08.628892",
           "valor": 24.1,
           "status": "ok",
           "origem": "auto"
@@ -626,7 +146,327 @@
       "log": [],
       "status_atual": "ok",
       "ultimo_valor": 24.1,
-      "ultima_leitura": "2026-04-19T19:12:59.905636"
+      "ultima_leitura": "2026-04-21T17:44:08.628892"
+    },
+    {
+      "id": "S0020",
+      "nome": "Sensor-S0020",
+      "tipo": "temp",
+      "modo": "estufa",
+      "min_val": 18.0,
+      "max_val": 31.0,
+      "falha": "variacao",
+      "criado_em": "2026-04-21T17:21:58.677390",
+      "historico": [
+        {
+          "ts": "2026-04-21T17:21:58.677412",
+          "valor": 25.8,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:40:05.375045",
+          "valor": 17.5,
+          "status": "alerta",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:13.549933",
+          "valor": 0.9,
+          "status": "erro",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:50.398672",
+          "valor": 24.6,
+          "status": "ok",
+          "origem": "manual"
+        }
+      ],
+      "log": [
+        {
+          "ts": "2026-04-21T17:40:05.375045",
+          "status": "alerta",
+          "valor": 17.5,
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:13.549933",
+          "status": "erro",
+          "valor": 0.9,
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:50.398672",
+          "status": "ok",
+          "valor": 24.6,
+          "origem": "manual"
+        }
+      ],
+      "status_atual": "ok",
+      "ultimo_valor": 24.6,
+      "ultima_leitura": "2026-04-21T17:40:50.398672",
+      "historico_temp_manual": [
+        {
+          "ts": "2026-04-21T17:26:09.507690",
+          "valor": 0.5
+        },
+        {
+          "ts": "2026-04-21T17:27:28.720694",
+          "valor": 31.0
+        }
+      ]
+    },
+    {
+      "id": "S0021",
+      "nome": "Sensor-S0021",
+      "tipo": "umid",
+      "modo": "estufa",
+      "min_val": 16.0,
+      "max_val": 31.0,
+      "falha": "variacao",
+      "criado_em": "2026-04-21T17:22:18.423203",
+      "historico": [
+        {
+          "ts": "2026-04-21T17:22:18.423228",
+          "valor": 27.0,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:23:06.446451",
+          "valor": 25.7,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:27:35.176628",
+          "valor": 27.4,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:28:04.083097",
+          "valor": 27.1,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:34:33.289371",
+          "valor": 27.1,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:41.460663",
+          "valor": 29.0,
+          "status": "ok",
+          "origem": "manual"
+        }
+      ],
+      "log": [],
+      "status_atual": "ok",
+      "ultimo_valor": 29.0,
+      "ultima_leitura": "2026-04-21T17:40:41.460663"
+    },
+    {
+      "id": "S0022",
+      "nome": "Sensor-S0022",
+      "tipo": "umid",
+      "modo": "externo",
+      "min_val": 40.0,
+      "max_val": 80.0,
+      "falha": "variacao",
+      "criado_em": "2026-04-21T17:22:38.724641",
+      "historico": [
+        {
+          "ts": "2026-04-21T17:22:40.053604",
+          "valor": 63.8,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:23:06.419548",
+          "valor": 64.4,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:27:35.150546",
+          "valor": 63.1,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:28:04.053424",
+          "valor": 61.5,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:33:55.020299",
+          "valor": 65.9,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:34:08.570810",
+          "valor": 63.9,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:34:33.265966",
+          "valor": 62.5,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:41.436619",
+          "valor": 62.9,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:44:07.768577",
+          "valor": 65.2,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:44:08.628946",
+          "valor": 62.5,
+          "status": "ok",
+          "origem": "auto"
+        }
+      ],
+      "log": [],
+      "status_atual": "ok",
+      "ultimo_valor": 62.5,
+      "ultima_leitura": "2026-04-21T17:44:08.628946"
+    },
+    {
+      "id": "S0023",
+      "nome": "Sensor-S0023",
+      "tipo": "temp",
+      "modo": "externo",
+      "min_val": 18.0,
+      "max_val": 31.0,
+      "falha": "sem_resposta",
+      "criado_em": "2026-04-21T17:22:52.025298",
+      "historico": [
+        {
+          "ts": "2026-04-21T17:22:53.312487",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:23:05.441036",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:23:59.545551",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:27:34.111659",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:28:03.073420",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:34:32.267573",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:40.397427",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:44:07.768618",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:44:08.628975",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "auto"
+        }
+      ],
+      "log": [],
+      "status_atual": "ok",
+      "ultimo_valor": 25.0,
+      "ultima_leitura": "2026-04-21T17:44:08.628975"
+    },
+    {
+      "id": "S0024",
+      "nome": "Sensor-S0024",
+      "tipo": "temp",
+      "modo": "estufa",
+      "min_val": 18.0,
+      "max_val": 31.0,
+      "falha": "erro_deteccao",
+      "criado_em": "2026-04-21T17:23:26.406980",
+      "historico": [
+        {
+          "ts": "2026-04-21T17:23:26.407002",
+          "valor": 25.0,
+          "status": "ok",
+          "origem": "auto"
+        },
+        {
+          "ts": "2026-04-21T17:40:05.375136",
+          "valor": 18.3,
+          "status": "ok",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:13.549976",
+          "valor": 3.0,
+          "status": "erro",
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:50.398715",
+          "valor": 26.2,
+          "status": "ok",
+          "origem": "manual"
+        }
+      ],
+      "log": [
+        {
+          "ts": "2026-04-21T17:40:13.549976",
+          "status": "erro",
+          "valor": 3.0,
+          "origem": "manual"
+        },
+        {
+          "ts": "2026-04-21T17:40:50.398715",
+          "status": "ok",
+          "valor": 26.2,
+          "origem": "manual"
+        }
+      ],
+      "status_atual": "ok",
+      "ultimo_valor": 26.2,
+      "ultima_leitura": "2026-04-21T17:40:50.398715"
     }
   ],
   "log_auto": [
@@ -648,6 +488,30 @@
     },
     {
       "ts": "2026-04-19T19:12:59.905439",
+      "clima": {
+        "temperatura": 25.0,
+        "umidade": 60
+      },
+      "ok": true
+    },
+    {
+      "ts": "2026-04-21T17:05:09.250711",
+      "clima": {
+        "temperatura": 25.0,
+        "umidade": 60
+      },
+      "ok": true
+    },
+    {
+      "ts": "2026-04-21T17:44:07.768421",
+      "clima": {
+        "temperatura": 25.0,
+        "umidade": 60
+      },
+      "ok": true
+    },
+    {
+      "ts": "2026-04-21T17:44:08.628864",
       "clima": {
         "temperatura": 25.0,
         "umidade": 60

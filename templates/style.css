@@ -127,7 +127,7 @@ nav { display: flex; align-items: center; gap: 8px; }
     font-family: var(--mono);
 }
 
-/* Select field — usado em tipo, modo e falha */
+/* select field usado em tipo, modo e falha */
 .select-field {
     width: 100%;
     background: var(--bg3);
@@ -228,8 +228,8 @@ nav { display: flex; align-items: center; gap: 8px; }
     align-items: center;
     justify-content: space-between;
     padding: 16px 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg2);
+    /* border-bottom: 1px solid var(--border); */
+    background: var(--bg);
 }
 
 .filtro-grupo { display: flex; align-items: center; gap: 6px; }
@@ -511,7 +511,7 @@ nav { display: flex; align-items: center; gap: 8px; }
     flex-wrap: wrap; flex-direction: column; gap: 12px; align-items: flex-start; }
 }
 
-/* ── toolbar com dois grupos de filtro ── */
+/* toolbar */
 .filtros-wrap {
     display: flex;
     flex-direction: column;
@@ -527,7 +527,7 @@ nav { display: flex; align-items: center; gap: 8px; }
     min-width: 60px;
 }
 
-/* ── Botão ações rápidas no header ── */
+/* btn acoes rapidas header */
 .btn-acoes {
     background: var(--bg3);
     border: 1px solid var(--border2);
@@ -542,7 +542,7 @@ nav { display: flex; align-items: center; gap: 8px; }
 }
 .btn-acoes:hover { color: var(--accent); border-color: var(--accent); }
 
-/* ── Botão ← Voltar no header ── */
+/* btn voltar header */
 .btn-voltar-header {
     background: transparent;
     border: none;
@@ -556,7 +556,7 @@ nav { display: flex; align-items: center; gap: 8px; }
 }
 .btn-voltar-header:hover { color: var(--text); }
 
-/* ── Modal ── */
+/* modal */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -682,7 +682,7 @@ nav { display: flex; align-items: center; gap: 8px; }
 
 .modal-divisor { height: 1px; background: var(--border); margin: 0; }
 
-/* Scheduler info */
+/* info */
 .scheduler-info { display: flex; flex-direction: column; gap: 4px; }
 .sched-row {
     display: flex;
@@ -695,7 +695,7 @@ nav { display: flex; align-items: center; gap: 8px; }
 .sched-row:last-child { border-bottom: none; }
 .sched-row strong { font-family: var(--mono); color: var(--text); font-size: 12px; }
 
-/* ── Botão deletar no card ── */
+/* botao dletar card */
 .btn-deletar {
     background: none;
     border: 1px solid transparent;
@@ -713,7 +713,7 @@ nav { display: flex; align-items: center; gap: 8px; }
     background: var(--erro-bg);
 }
 
-/* ── Origem da leitura no log ── */
+/* origem da leitura no log */
 .log-origem {
     font-size: 11px;
     color: var(--text3);
@@ -768,6 +768,6 @@ nav { display: flex; align-items: center; gap: 8px; }
     align-items: center;
     justify-content: space-between;
     padding: 14px 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg2);
+    /* border-bottom: 1px solid var(--border); */
+    background: var(--bg);
 }

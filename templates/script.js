@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════
-// ESTADO GLOBAL
-// ═══════════════════════════════════════════
+// estado global
 let sensores = []
 let filtroModoAtivo = 'todos'
 let filtroTipoAtivo = 'todos'
@@ -13,17 +11,13 @@ const FALHA_LABEL  = {
     'sem_resposta':  'Sem resposta'
 }
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
+// init
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('grupo-faixa-temp')) toggleTipo()
     if (document.getElementById('sensor-grid'))      carregarSensores()
 })
 
-// ═══════════════════════════════════════════
-// PÁGINA DE CRIAÇÃO (index.html)
-// ═══════════════════════════════════════════
+// pag criacao
 function toggleTipo() {
     const tipo = document.getElementById('select-tipo')?.value
     if (!tipo) return
@@ -69,9 +63,7 @@ function showFeedback(msg, tipo) {
     setTimeout(() => { el.className = 'feedback hidden' }, 4000)
 }
 
-// ═══════════════════════════════════════════
-// MODAL DE AÇÕES RÁPIDAS
-// ═══════════════════════════════════════════
+// modal acoes rapidas
 function abrirModal() {
     document.getElementById('modal-overlay').classList.remove('hidden')
     carregarStatusScheduler()
@@ -105,13 +97,13 @@ async function carregarStatusScheduler() {
     } catch { /* silencioso */ }
 }
 
+// irrigação global (modal) — registra para todos
 async function registrarIrrigacao() {
-    const obs = document.getElementById('irrigacao-obs')?.value || ''
     try {
         const res  = await fetch('/api/irrigacao', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ observacao: obs })
+            body: JSON.stringify({})
         })
         const data = await res.json()
         let msg = '💧 Irrigação registrada!'
@@ -119,10 +111,11 @@ async function registrarIrrigacao() {
             msg += ` ⚠ Atenção: ${data.alertas_umidade.length} sensor(es) com umidade abaixo do esperado.`
         }
         mostrarFbModal('fb-irrigacao', msg, data.alertas_umidade?.length > 0 ? 'alerta' : 'ok')
-        document.getElementById('irrigacao-obs').value = ''
+        if (document.getElementById('sensor-grid')) await carregarSensores()
     } catch { mostrarFbModal('fb-irrigacao', 'Erro ao registrar.', 'erro') }
 }
 
+// temperatura estufa global (modal)
 async function registrarTempEstufa() {
     const val = document.getElementById('estufa-temp')?.value
     if (!val) { mostrarFbModal('fb-estufa', 'Informe a temperatura.', 'erro'); return }
@@ -152,9 +145,7 @@ function mostrarFbModal(id, msg, tipo) {
     setTimeout(() => { el.className = 'modal-feedback hidden' }, 5000)
 }
 
-// ═══════════════════════════════════════════
-// PÁGINA DE GERENCIAR
-// ═══════════════════════════════════════════
+// pag gerenciar
 async function carregarSensores() {
     try {
         const res = await fetch('/api/sensores')
@@ -253,7 +244,7 @@ async function deletarSensor(e, id, deDetalhe = false) {
     } catch { alert('Erro ao excluir sensor.') }
 }
 
-// lwitura geral
+// leitura geral toolbar
 async function leituraGeral() {
     const btn = document.querySelector('.btn-leitura-geral')
     if (btn) { btn.textContent = 'Atualizando...'; btn.disabled = true }
@@ -269,7 +260,7 @@ async function leituraGeral() {
     }
 }
 
-// leitura manual
+// leitura manual sensor externo
 async function leituraManual(id) {
     try {
         const res = await fetch(`/api/sensores/${encodeURIComponent(id)}/leitura`, { method: 'POST' })
@@ -282,6 +273,29 @@ async function leituraManual(id) {
     } catch { alert('Erro ao realizar leitura.') }
 }
 
+// irrigação de um sensor específico
+async function irrigacaoSensor(id) {
+    try {
+        await fetch(`/api/sensores/${encodeURIComponent(id)}/irrigacao`, { method: 'POST' })
+        await abrirDetalhe(id)
+    } catch { alert('Erro ao registrar irrigação.') }
+}
+
+// temperatura de um sensor específico
+async function tempSensor(id) {
+    const input = document.getElementById('temp-inline-input')
+    const val = input?.value
+    if (!val) { alert('Informe a temperatura.'); return }
+    try {
+        await fetch(`/api/sensores/${encodeURIComponent(id)}/temperatura`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ valor: parseFloat(val) })
+        })
+        await abrirDetalhe(id)
+    } catch { alert('Erro ao registrar temperatura.') }
+}
+
 // detalhe sensor
 function atualizarHeaderDetalhe() {
     const header = document.getElementById('header-principal')
@@ -291,6 +305,7 @@ function atualizarHeaderDetalhe() {
         <nav>
             <a href="/" class="nav-link">Criar Sensor</a>
             <a href="/gerenciar" class="nav-link ativo">Gerenciar</a>
+            <button class="btn-acoes" onclick="abrirModal()">Ações rápidas</button>
         </nav>
     `
 }
@@ -303,6 +318,7 @@ function restaurarHeader() {
         <nav>
             <a href="/" class="nav-link">Criar Sensor</a>
             <a href="/gerenciar" class="nav-link ativo">Gerenciar</a>
+            <button class="btn-acoes" onclick="abrirModal()">Ações rápidas</button>
         </nav>
     `
 }
@@ -338,13 +354,29 @@ async function abrirDetalhe(id) {
                 </div>`).join('')
             : '<p class="sem-dados">Sem leituras ainda.</p>'
 
-        const podeLeiturar = s.modo === 'externo' || (s.modo === 'estufa' && s.tipo === 'umid')
+        // botão contextual por tipo/modo
+        let btnAcao = ''
+        if (s.modo === 'externo') {
+            btnAcao = `<button class="btn-leitura" onclick="leituraManual('${s.id}')">Realizar leitura</button>`
+        } else if (s.modo === 'estufa' && s.tipo === 'umid') {
+            btnAcao = `<button class="btn-leitura" onclick="irrigacaoSensor('${s.id}')">💧 Registrar irrigação</button>`
+        } else if (s.modo === 'estufa' && s.tipo === 'temp') {
+            btnAcao = `
+                <div style="display:flex;align-items:center;gap:6px">
+                    <div class="input-wrap" style="width:110px">
+                        <span class="input-label">°C</span>
+                        <input type="number" id="temp-inline-input" placeholder="27" step="0.1"
+                            style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);padding:8px 10px 8px 34px;font-family:var(--mono);font-size:13px;outline:none;">
+                    </div>
+                    <button class="btn-leitura" onclick="tempSensor('${s.id}')">🌡 Registrar</button>
+                </div>`
+        }
 
         view.innerHTML = `
             <div class="detalhe-toolbar">
                 <button class="btn-voltar" onclick="voltarGrid()">← Voltar</button>
                 <div style="display:flex;align-items:center;gap:10px">
-                    ${podeLeiturar ? `<button class="btn-leitura" onclick="leituraManual('${s.id}')">Realizar leitura</button>` : ''}
+                    ${btnAcao}
                     <button class="btn-deletar-detalhe" onclick="deletarSensor(event, '${s.id}', true)">✕ Excluir</button>
                 </div>
             </div>
@@ -392,7 +424,6 @@ function voltarGrid() {
     restaurarHeader()
 }
 
-// helpers
 function formatTs(ts) {
     return new Date(ts).toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit',
